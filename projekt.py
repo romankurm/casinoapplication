@@ -31,7 +31,7 @@ over = 2
 middle = 3
 win = 0
 
-roulettewin = odds()
+roulette_win = odds()
 
 def win_control():
     global under, over, middle, win
