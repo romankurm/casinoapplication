@@ -1,4 +1,4 @@
-Selle kasiinot simuleeriva programmi põhimõte on pakkuda mängijale kasiinoelamust ilma, et mängija peaks raiskama oma raha ning kogema negatiivseid emotsioone pärast kaotust.
+Kasiinot simuleeriva programmi põhimõte on pakkuda mängijale kasiinoelamust ilma, et mängija peaks raiskama oma raha ning kogema negatiivseid emotsioone pärast kaotust.
 Programm sisaldab mitmeid erinevaid kasiinode poolt pakutavaid mängumoode nagu näiteks ruleti keerutamine, slot machine ja blackjack.
 Programmi eesmärk on pakkuda võimalikult head meelelahutust mängijale erinevate sound effectide ning graafiliste disainidega.
 Kasiinosse sisenedes tervitab mängijat peamenüü, kus on võimalik tal valida alammenüüde hulgast sobiv mängumood. Plaanis on ka implementeerida mängusisene raha.
