@@ -20,9 +20,9 @@ import PySimpleGUI as sg
 from datetime import date
 
 def odds():
-    roulettenumbrid = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ,14 ,15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-    winnumber = (random.choice(roulettenumbrid))
-    return winnumber
+    roulette_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ,14 ,15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    win_number = (random.choice(roulettenumbrid))
+    return win_number
 
 #funktsioon odds tagastab suvalise numbri 1-30.
 
@@ -33,17 +33,17 @@ win = 0
 
 roulettewin = odds()
 
-def wincontrol():
+def win_control():
     global under, over, middle, win
-    if roulettewin <= 13:
+    if roulette_win <= 13:
         win = under
-    elif roulettewin >= 15:
+    elif roulette_win >= 15:
         win = over
-    elif roulettewin == 14:
+    elif roulette_win == 14:
         win = middle
     return win
 
-#funktsioon wincontrol kontrollib kas võidunumber jäi punaste(1-13) või mustade(15-30) vahele või hoopis roheliseks(14)
+#funktsioon win_control kontrollib kas võidunumber jäi punaste(1-13) või mustade(15-30) vahele või hoopis roheliseks(14)
 
 sg.theme('GreenMono')
 paigutus = [[sg.Text('WinOnly CASINO', text_color='red', font=("Helvetica", 18))],
