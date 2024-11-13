@@ -1,3 +1,20 @@
+################################################
+# Programmeerimine I
+# 2024/2025 sügissemester
+#
+# Projekt OnlyWin Casino
+# Teema: Hasartmängude simulaator
+#
+#
+# Autorid: Tim Ingo, Roman Kurm
+#
+# mõningane eeskuju: erinevad hasartmängud internetist
+#
+# Lisakommentaar: Käivitamiseks läheb vaja PySimpleGUI teeki.
+#
+##################################################
+
+
 import random
 import PySimpleGUI as sg
 from datetime import date
