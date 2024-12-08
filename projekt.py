@@ -16,7 +16,9 @@
 
 
 import random
+import os
 import PySimpleGUI as sg
+import copy
 from datetime import date
 
 def odds():
@@ -30,6 +32,8 @@ under = 1
 over = 2
 middle = 3
 win = 0
+
+slots_spinned = False
 
 roulette_win = odds()
 
@@ -59,113 +63,183 @@ def calculations(number):
 #funktsioon calculations kontrollib üle, kuhu võidunumber osutus ning mis oli panustatud number
 
 sg.theme('GreenMono')
-layout = [[sg.Text('WinOnly CASINO', text_color='red', font=("Helvetica", 18))],
-          [sg.Text('Sisestage nimi: ')],
-          [sg.InputText(key="eesnimi")],
-          [sg.Text('Sisestage pangakonto nr: ')],
-          [sg.InputText(key="pank")],
-          [sg.Text('_' * 80)],
-          [sg.Submit('Roulette'), sg.Submit('Slots')]]
-window = sg.Window('1. window: andmed', layout, size=(1024,800))
 
-#"ehitame" esimese akna layoute.
+while True:
 
-event, values = window.read()
+    layout = [[sg.Text('WinOnly CASINO', text_color='red', font=("Helvetica", 18))],
+            [sg.Text('Sisestage nimi: ')],
+            [sg.InputText(key="eesnimi")],
+            [sg.Text('Sisestage pangakonto nr: ')],
+            [sg.InputText(key="pank")],
+            [sg.Text('_' * 80)],
+            [sg.Submit('Roulette'), sg.Submit('Slots')]]
+    window = sg.Window('1. window: andmed', layout, size=(1024,800))
 
-if event == sg.WIN_CLOSED:
-    window.close()
-#akna sulgemisel lõpetab programm töö
+    #"ehitame" esimese akna layoute.
 
-elif event == 'Roulette':
-    window.close() #Põhiwindow suletakse kui vajutatakse Roulette nupule
-    
-    #loome uue layoute uue akna jaoks
-    layout2 = [[sg.Text('BigBassBonex', text_color='black', font=("Helvetica", 12))],
-                [sg.Text('Numbrid 1-13; 15-31 tagastavad kahekordse summa, 14 tagastab 7X')],
-                [sg.Text('Millisele numbrile panustate? ', size=(15,2)), sg.Slider(range=(0,31), orientation='h', size=(50,25), key='L')],
-                [sg.Text('Mitme euroga panustate? ')],
-                [sg.InputText(key="panus")],
-                [sg.Submit('Sisesta'), sg.Cancel('Välju')]]
+    event, values = window.read()
 
-    window = sg.Window('2. window: Roulette', layout2, size=(1024,800))
-    event2, values2 = window.read()
-    #salvestame mis valikud kasutaja tegi
+    eesnimi = values['eesnimi']
+    pank = values['pank']
 
-    if event2 == 'Sisesta':
+    if event == sg.WIN_CLOSED:
+        window.close()
+        break
+    #akna sulgemisel lõpetab programm töö
 
-        bet_number = values2['L']
-        bet_amount = int(values2['panus'])
-        result = calculations(bet_number)
+    elif event == 'Roulette':
+        window.close() #Põhiwindow suletakse kui vajutatakse Roulette nupule
+        
+        #loome uue layoute uue akna jaoks
+        layout2 = [[sg.Text('BigBassBonex', text_color='black', font=("Helvetica", 12))],
+                    [sg.Text('Numbrid 1-13; 15-31 tagastavad kahekordse summa, 14 tagastab 7X')],
+                    [sg.Text('Millisele numbrile panustate? ', size=(15,2)), sg.Slider(range=(0,31), orientation='h', size=(50,25), key='L')],
+                    [sg.Text('Mitme euroga panustate? ')],
+                    [sg.InputText(key="panus")],
+                    [sg.Submit('Sisesta'), sg.Cancel('Välju')]]
 
-#salvestame andmed muutujatele
+        window = sg.Window('2. window: Roulette', layout2, size=(1024,800))
+        event2, values2 = window.read()
+        #salvestame mis valikud kasutaja tegi
 
-        if win == 1:
-            color = "Red"
-        elif win == 2:
-            color = "Black"
-        elif win == 3:
-            color = "Green"
+        if event2 == 'Sisesta':
 
-#kontrollime mis värv võiduks osutunud on
+            bet_number = values2['L']
+            bet_amount = int(values2['panus'])
+            result = calculations(bet_number)
 
-        if bet_number <= 13:
-            color_chosen = "Red"
-        elif bet_number >= 15:
-            color_chosen = "Black"
-        elif bet_number == 14:
-            color_chosen = "Green"
+    #salvestame andmed muutujatele
 
-#salvestame kasutaja valitud värvi
+            if win == 1:
+                color = "Red"
+            elif win == 2:
+                color = "Black"
+            elif win == 3:
+                color = "Green"
 
-        if result == 1:
-            cashback = 2 * bet_amount
-        elif result == 2:
-            cashback = 2 * bet_amount
-        elif result == 3:
-            cashback = 7 * bet_amount
-        else:
-            cashback = 0
+    #kontrollime mis värv võiduks osutunud on
 
-#arvutame panuse tagasimakse
+            if bet_number <= 13:
+                color_chosen = "Red"
+            elif bet_number >= 15:
+                color_chosen = "Black"
+            elif bet_number == 14:
+                color_chosen = "Green"
+
+    #salvestame kasutaja valitud värvi
+
+            if result == 1:
+                cashback = 2 * bet_amount
+            elif result == 2:
+                cashback = 2 * bet_amount
+            elif result == 3:
+                cashback = 7 * bet_amount
+            else:
+                cashback = 0
+
+    #arvutame panuse tagasimakse
 
 
-        window.close()  # Sulgeme praeguse akna
+            window.close()  # Sulgeme praeguse akna
+            
+            
+            # paigutus viimase akna jaoks
+            layout3 = [
+                [sg.Text(f'Roulette võiduvõimalus: {color}, {roulette_win   }')],
+                [sg.Text('Teie panus oli: ' + str(bet_amount))],
+                [sg.Text('Teie panustatud number oli: ' + str(bet_number) + (color_chosen))],
+                [sg.Text('Teie voidetud summa on: ' + str(cashback))],
+                [sg.Submit('Välju')]
+            ]
+            
+            
+            window = sg.Window('3. window: Tulemus', layout3, size=(1024,800))
+            while True:
+                event3, values3 = window.read()
+
+                if event3 == sg.WIN_CLOSED or event3 == 'Välju':
+                    window.close()
+                    quit()
+            
         
         
-        # paigutus viimase akna jaoks
-        layout3 = [
-            [sg.Text(f'Roulette võiduvõimalus: {color}, {roulette_win   }')],
-            [sg.Text('Teie panus oli: ' + str(bet_amount))],
-            [sg.Text('Teie panustatud number oli: ' + str(bet_number) + (color_chosen))],
-            [sg.Text('Teie voidetud summa on: ' + str(cashback))],
-            [sg.Submit('Välju')]
-        ]
-        
-        
-        window = sg.Window('3. window: Tulemus', layout3, size=(1024,800))
-        while True:
-            event3, values3 = window.read()
+        #kui vajutatakse nuppu 'Slots', pannakse põhiwindow kinni ja avaneb uus window
+    elif event == 'Slots':
 
-            if event3 == sg.WIN_CLOSED or event3 == 'Välju':
+        # sulgeme vana akna
+
+        window.close()
+
+        # faili tee pildile
+
+        image_path = os.path.join(os.getcwd(), 'casinoslotsmachine.png')
+
+        # teeme esmase layouti
+
+        layout4 = [
+                    [sg.Image(filename=image_path)],
+                    [sg.Text('Nimi: ' + eesnimi, text_color='green')],
+                    [sg.Text('Pangakonto: ' + pank, text_color='green')],
+                    [sg.Text('BigBassBonex', text_color='black', font=("Helvetica", 12))],
+                    [sg.Text('Slots masin - kahekordista oma pangakonto!', text_color='red', font=("Helvetica", 12))],
+                    [sg.Button("Tulista!", key="P")],
+                    [sg.Button("Tagasi...", key="T")]
+                    ]
+        
+        # faili teed slots machine ikoonidele
+        
+        slots_icon_7 = os.path.join(os.getcwd(), 'slotmachine_7.png')
+        slots_icon_fruit = os.path.join(os.getcwd(), 'slotmachine_fruit.png')
+
+        # list mis sisaldab ikoone (teen selle selleks, et hiljem suvaliselt valida siit ikooni faili tee)
+
+        slots = [slots_icon_7, slots_icon_fruit]
+
+        # loome uue akna
+
+        window = sg.Window('4. window: Slots', layout4, size=(1024,800))
+
+        while (True):
+
+            event4, values4 = window.read()
+
+            # see if statement on true, kui mangija vajutab 'Tulista!' nupule
+            if (event4 == 'P'):
+
+                # sule vana aken
                 window.close()
+
+                #vali suvalised numbrid nullist yheni
+                rand_int = random.randint(0, 1)
+                rand_int_2 = random.randint(0, 1)
+                rand_int_3 = random.randint(0, 1)
+
+                # koostame uue layouti, mis seekord sisaldab ka meie suvaliselt valitud ikoone uksteise jarel
+                layout4 = [
+                [sg.Image(filename=image_path)],
+                [sg.Text('Nimi: ' + eesnimi, text_color='green')],
+                [sg.Text('Pangakonto: ' + pank, text_color='green')],
+                [sg.Text('BigBassBonex', text_color='black', font=("Helvetica", 12))],
+                [sg.Text('Slots masin - kahekordista oma pangakonto!', text_color='red', font=("Helvetica", 12))],
+                [sg.Button("Tulista!", key="P")],
+                [sg.Button("Tagasi...", key="T")],
+                [sg.Image(filename=slots[rand_int]), sg.Image(filename=slots[rand_int_2]), sg.Image(filename=slots[rand_int_3])],
+                ]
+
+                # kui mangija sai kolm samasugust ikooni jarjest siis on ta voitja
+                if (rand_int == rand_int_2 and rand_int == rand_int_3):
+                    layout4.append([sg.Text('Sa võitsid! Palju õnne!', text_color='red', font=("Helvetica", 12))])
+                
+                # loo uus aken peale slot machine spinnimist
+            
+                window = sg.Window('4. window: Slots', layout4, size=(1024,800))
+
+            # see if statement on true, kui mangija vajutab 'Tagasi..' nupule
+            elif (event4 == 'T'):
                 break
-        
-    
-    
-    #kui vajutatakse nuppu 'Slots', pannakse põhiwindow kinni ja avaneb uus window
-elif event == 'Slots':
-    
-    window.close()
-
-    #loome jällegi uue akna
-
-    layout4 = [[sg.Text('BigRassBonex', text_color='black', font=("Helvetica", 12))],
-            [sg.Text('Hetkel saab proovida vaid Roulette masinat.')]]
+            # see if statement on true, kui mangija sulgeb akna ristist
+            elif (event4 == sg.WIN_CLOSED):
+                quit()
 
 
-    window = sg.Window('4. window: Slots', layout4, size=(1024,800))
-
-    values4, values4 = window.read()
-    
-    
-    window.close()
+        window.close()
